@@ -29,6 +29,22 @@
 		
 var camera, scene, renderer, mesh, loader;
 
+var targetRotationX = 10; 
+var targetRotationY = 10; 
+var targetRotationZ = 10; 
+var targetRotationOnMouseDown = 0; 
+ 
+var mouseX = 0; 
+var mouseXOnMouseDown = 10; 
+ 
+var mouseY = 0; 
+var mouseYOnMouseDown = 10; 
+ 
+ 
+var windowHalfX = window.innerWidth / 2; 
+var windowHalfY = window.innerHeight / 2;
+
+
 init();
 animate();
 
@@ -46,30 +62,73 @@ function init() {
         mesh.scale.set( 5, 5, 5 );
         mesh.position.y = -600;
         mesh.position.x = 0;
+
+        mesh.dynamic = false;
+        mesh.overdraw = true;
     } );
 
-    var ambientLight = new THREE.AmbientLight(0x555555);
+
+    var ambientLight = new THREE.AmbientLight(0xffffff);
     scene.add(ambientLight);
 
     var directionalLight = new THREE.DirectionalLight(0xffffff);
     directionalLight.position.set(1, 1, 1).normalize();
     scene.add(directionalLight);
 
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize( window.innerWidth, window.innerHeight );
 
     document.body.appendChild( renderer.domElement );
+    document.addEventListener( 'mousedown', onDocumentMouseDown, false );
 }
+
+function onDocumentMouseDown( event ) { 
+    event.preventDefault(); 
+    document.addEventListener( 'mousemove', onDocumentMouseMove, false ); 
+    document.addEventListener( 'mouseup', onDocumentMouseUp, false ); 
+    document.addEventListener( 'mouseout', onDocumentMouseOut, false ); 
+    mouseXOnMouseDown = event.clientX - windowHalfX; 
+    mouseYOnMouseDown = event.clientY - windowHalfY; 
+    targetRotationOnMouseDown = 5; 
+} 
+
+function onDocumentMouseMove( event ) { 
+    mouseX = event.clientX - windowHalfX; 
+    targetRotationY = targetRotationOnMouseDown + ( mouseX - mouseXOnMouseDown ) * 0.02; 
+    mouseY = event.clientY - windowHalfY; 
+    targetRotationX = targetRotationOnMouseDown + ( mouseY - mouseYOnMouseDown ) * 0.02; 
+} 
+function onDocumentMouseUp( event ) { 
+    document.removeEventListener( 'mousemove', onDocumentMouseMove, false ); 
+    document.removeEventListener( 'mouseup', onDocumentMouseUp, false ); 
+    document.removeEventListener( 'mouseout', onDocumentMouseOut, false ); 
+} 
+function onDocumentMouseOut( event ) { 
+    document.removeEventListener( 'mousemove', onDocumentMouseMove, false ); 
+    document.removeEventListener( 'mouseup', onDocumentMouseUp, false ); 
+    document.removeEventListener( 'mouseout', onDocumentMouseOut, false ); 
+} 
 
 function animate() {
 
     scene.add( mesh );
     requestAnimationFrame( animate );
 
-    mesh.rotation.y += 0.005;
-
-    renderer.render( scene, camera );
+    mesh.rotation.y += 0.01;
+ render(); 
+    //renderer.render( scene, camera );
 }
+
+function render() { 
+    mesh.rotation.x += ( targetRotationX - mesh.rotation.x ) * 0.01; 
+    mesh.rotation.y += ( targetRotationY - mesh.rotation.y ) * 0.01; 
+    renderer.render( scene, camera ); 
+} 
+// -----------------------------------------------------------
+
+
+
+
 		</script>
 
 	</body>
