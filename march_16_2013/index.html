@@ -1,0 +1,76 @@
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<title>WebGL</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				background:#fff;
+				padding:0;
+				margin:0;
+				overflow:hidden;
+				font-family:'trebuchet ms', 'lucida grande', 'lucida sans unicode', arial, helvetica, sans-serif;
+				text-align:center;
+			}
+			canvas { pointer-events:none; z-index:10; }
+			
+			p { font-size: small;}
+
+		</style>
+	</head>
+
+	<body>
+		<script src="lib/build/Three.js"></script>
+		
+		
+		<script>
+		
+var camera, scene, renderer, mesh, loader;
+
+init();
+animate();
+
+function init() {
+
+    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+    camera.position.z = 1000;
+
+    scene = new THREE.Scene();
+
+    loader = new THREE.JSONLoader();
+
+    loader.load( "../Building_obj/Building.js", function( geometry ) {
+        mesh = new THREE.Mesh( geometry, new THREE.MeshNormalMaterial() );
+        mesh.scale.set( 5, 5, 5 );
+        mesh.position.y = -600;
+        mesh.position.x = 0;
+    } );
+
+    var ambientLight = new THREE.AmbientLight(0x555555);
+    scene.add(ambientLight);
+
+    var directionalLight = new THREE.DirectionalLight(0xffffff);
+    directionalLight.position.set(1, 1, 1).normalize();
+    scene.add(directionalLight);
+
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+
+    document.body.appendChild( renderer.domElement );
+}
+
+function animate() {
+
+    scene.add( mesh );
+    requestAnimationFrame( animate );
+
+    mesh.rotation.y += 0.005;
+
+    renderer.render( scene, camera );
+}
+		</script>
+
+	</body>
+</html>
